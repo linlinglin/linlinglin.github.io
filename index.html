@@ -19,7 +19,7 @@
             justify-content: center;
             align-items: center;
             flex-direction: column;
-            padding-top: 8vh;
+            padding-top: 2vh;
         }
 
         .bg-gif {
@@ -31,7 +31,7 @@
         }
 
         .container {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.75);
             padding: 35px;
             border-radius: 12px;
             box-shadow: 0 0 20px rgba(0,0,0,0.5);
@@ -39,7 +39,7 @@
             z-index: 2;
             width: 90%;
             max-width: 1250px; 
-            overflow-x: auto; /* 小屏幕下允许横向滚动 */
+            overflow-x: auto; 
         }
 
         h2 {
@@ -52,10 +52,11 @@
             font-size: 14px; 
             color: #222;
             line-height: 1.6;
-            white-space: pre; /* 核心：保留空格和换行格式 */
-            text-align: left; /* 内部左对齐，靠JS生成的空格来定位 */
-            font-family: "Consolas", "Courier New", monospace; /* 必须使用等宽字体 */
-            display: inline-block; /* 让div宽度跟随文字内容收缩 */
+            white-space: pre; 
+            text-align: left; 
+            /* 🔥 已改回等线字体 */
+            font-family: "DengXian", "等线", "Microsoft YaHei", sans-serif; 
+            display: inline-block; 
         }
     </style>
 </head>
@@ -69,9 +70,8 @@
 
 <script>
 window.onload = function showFib() {
-    let n = 96;
+    let n = 97; 
     let seq = [];
-    // 使用 BigInt (加n后缀) 保证第90多项的大数精度不丢失
     let a = 0n, b = 1n; 
     
     for (let i = 0; i < n; i++) {
@@ -79,12 +79,18 @@ window.onload = function showFib() {
         [a, b] = [b, a + b];
     }
 
-    const COL_WIDTH = 21; // 固定每列宽度
-    const COLS = 6;       // 固定6列
+    // 从第二个开始输出
+    seq.shift(); 
+
+    // 动态计算最大列宽（最长数字的长度 + 2个空格间距）
+    const maxNumLength = Math.max(...seq.map(num => num.length));
+    const COL_WIDTH = maxNumLength + 2; 
+    
+    const COLS = 6;       
     let rows = [];
     let line = "";
     
-    // 1. 将数列按6列分组拼接成行
+    // 将数列按6列分组拼接成行
     seq.forEach((numStr, idx) => {
         line += numStr.padStart(COL_WIDTH, " ");
         if ((idx + 1) % COLS === 0) {
@@ -92,18 +98,20 @@ window.onload = function showFib() {
             line = "";
         }
     });
-    if (line) rows.push(line); // 处理最后一行不足6个的情况
+    if (line) rows.push(line); 
 
-    // 2. 🔥 构建居中的竖直金字塔
-    let totalRows = rows.length; // 共16行
-    // 计算出最底层（也就是最长的一行）的实际字符长度
-    let bottomRowLength = rows[totalRows - 1].length;
+    // 构建等腰金字塔（左右对称）
+    let totalRows = rows.length; 
+    
+    // 计算出最后一行（也就是整个金字塔最宽的一层）的总字符长度
+    let bottomRowTotalWidth = rows[totalRows - 1].length;
     
     let pyramid = rows.map((row, index) => {
-        // 当前行的实际字符长度
+        // 当前行实际的字符长度
         let currentRowLength = row.length;
-        // 计算左侧需要填充的空格数，使其相对于最底层居中
-        let indent = Math.floor((bottomRowLength - currentRowLength) / 2);
+        
+        // 等腰金字塔的核心公式：缩进空格数 = (最底层总宽度 - 当前行实际宽度) / 2
+        let indent = Math.floor((bottomRowTotalWidth - currentRowLength) / 2);
         
         return " ".repeat(indent) + row;
     });
