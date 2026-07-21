@@ -1,9 +1,5 @@
 # Evolve
 
-## Play
-
-https://pmotschmann.github.io/Evolve/
-
 ## About
 
 An incremental game about evolving a civilization from primordial ooze into a space faring empire.
